@@ -235,3 +235,17 @@ def test_post_data_save(mock_server):
     with pytest.raises(AttributeError) as e:
         content = r.json['form']
     assert file_data['form'] == data
+
+
+def test_post_file(mock_server):
+    file_name = 'tests/static/data.json'
+    r = requests.post('http://127.0.0.1:5000/serialize_request', file=file_name)
+    with open(file_name, 'r') as reader:
+        file_json_data: dict = json.loads(reader.read())
+    assert r.json['data'] == file_json_data
+
+
+def test_post_file_chunked(mock_server, image_file_bytes):
+    r = requests.post('http://127.0.0.1:5000/serialize_request', file='tests/static/image.png', chunked=True,
+                      chunk_size=128)
+    assert base64.b64decode(r.json['data']) == image_file_bytes
