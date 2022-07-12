@@ -527,13 +527,16 @@ class HttpRequest:
 
 
 def request(url: str, port: int = None, method: str = 'GET', data=None, json=None, file=None, custom_headers=None,
-            save_to_file: str = None):
+            save_to_file: str = None, chunked=False, chunk_size=512):
     if data is not None:
         http_body = HttpBodyForm(form_data=data)
     elif json is not None:
         http_body = HttpBodyJSON(json_data=json)
     elif file is not None:
-        http_body = HttpBodyFile(file_name=file)
+        if chunked:
+            http_body = HttpBodyChunked(file_name=file, chunk_size=chunk_size)
+        else:
+            http_body = HttpBodyFile(file_name=file)
     else:
         http_body = HttpBodyEmpty()
     http_request = HttpRequest(url, port=port, custom_headers=custom_headers, method=method,
