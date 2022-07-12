@@ -28,7 +28,7 @@ try:
         def close(self):
             self._sock.close()
 
-except:
+except ModuleNotFoundError as e:
     print('Base Python Implementation')
     import socket as usocket
     import ssl
